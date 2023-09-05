@@ -1,6 +1,6 @@
 ﻿namespace SchedulingEngine.Model
 {
-    public class Trains
+    public class Train
     {
         public int TrainNumber { get; set; }
         public int LoadingCapacity { get; set;}
