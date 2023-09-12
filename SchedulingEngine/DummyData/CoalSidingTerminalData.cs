@@ -5,7 +5,7 @@ namespace SchedulingEngine.DummyData
     public static class CoalSidingTerminalData
     {
         public static List<CoalSidingTerminal> coalSidingTerminals { get; set; }
-
+        public static int TotalNumberOfTerminals { get; set; } = 500;
         static CoalSidingTerminalData()
         {
             coalSidingTerminals = GenerateCoalSidingTerminalData();
@@ -15,7 +15,7 @@ namespace SchedulingEngine.DummyData
         {
             List<CoalSidingTerminal> coalSidingTerminals = new List<CoalSidingTerminal>();
             Random random = new Random();
-            for (int numberOfTerminals = 0; numberOfTerminals < 500; numberOfTerminals++)
+            for (int numberOfTerminals = 0; numberOfTerminals < TotalNumberOfTerminals; numberOfTerminals++)
             {
                 var terminalName = GenerateRandomString(random, 4);
                 
