@@ -74,6 +74,8 @@
             {
                 int u = MinDistance(dist, sptSet);
 
+                if (u == -1) continue;
+
                 sptSet[u] = true;
 
                 foreach (var edge in graph[u])
