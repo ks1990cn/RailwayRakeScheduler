@@ -30,7 +30,7 @@
 
             for (int v = 0; v < V; v++)
             {
-                if (!sptSet[v] && dist[v] < min)
+                if (!sptSet[v] && dist[v] < min && TryToRunOnPath(v, dist[v]))
                 {
                     min = dist[v];
                     minIndex = v;
@@ -39,10 +39,25 @@
 
             return minIndex;
         }
+        /// <summary>
+        /// This method will be responsible to try to run on given path considering other trains on path and schedule of terminals
+        /// </summary>
+        /// <param name="terminalId"></param>
+        /// <param name="distancefromSources"></param>
+        /// <returns></returns>
+        private bool TryToRunOnPath(int terminalId, int distancefromSources)
+        {
+            if(terminalId == 4)
+            {
+                return false ;
+            }
+            return true;
+        }
 
-        public void ShortestPath(int src, int dest)
+        public void ScheduledShortestPath(int src, int dest)
         {
             List<int> dist = new List<int>(V);
+            //Shortest path tree set
             List<bool> sptSet = new List<bool>(V);
             List<int> prev = new List<int>(V); // Store the previous vertices in the shortest path
 
@@ -75,7 +90,7 @@
             }
 
             // Reconstruct and print the shortest path from source to destination
-            Console.WriteLine("Shortest path from " + src + " to " + dest + ":");
+            Console.WriteLine("Scheduled shortest path from " + src + " to " + dest + ":");
             PrintShortestPath(prev, dest);
         }
 

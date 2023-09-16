@@ -2,7 +2,7 @@
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         int V = 6;
         Dijkstra dijkstra = new Dijkstra(V);
@@ -17,6 +17,6 @@ internal class Program
         dijkstra.AddEdge(3, 5, 2);
         dijkstra.AddEdge(4, 5, 4);
 
-        dijkstra.ShortestPath(0,5);
+        dijkstra.ScheduledShortestPath(0, 5);
     }
 }
