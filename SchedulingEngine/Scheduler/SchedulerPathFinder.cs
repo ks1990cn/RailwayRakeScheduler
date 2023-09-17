@@ -9,11 +9,13 @@
         private List<List<(int, int)>> graph;
         List<int> prev; // Store the previous vertices in the shortest path
         SchedulerPathRunner schedulerPathRunner;
+        List<int> terminalsTravelled;    
         public PathFinder(int v)
         {
             V = v;
             graph = new List<List<(int, int)>>(V);
             prev = new List<int>(V);
+            terminalsTravelled = new List<int>();
             schedulerPathRunner = new SchedulerPathRunner();    
             for (int i = 0; i < V; i++)
             {
@@ -29,20 +31,21 @@
         }
 
         // Find the vertex with the minimum distance value from the set of vertices not yet included in the shortest path tree
-        private int MinDistance(List<int> dist, List<bool> sptSet, int src)
+        private int MinDistance(List<int> dist, List<bool> sptSet, int src, List<List<(int, int)>> graph)
         {
             int min = int.MaxValue;
             int minIndex = -1;
             for (int v = 0; v < V; v++)
             {
                 //Here we will check if we can run on given path and able to find time slot for it.
-                bool canUseThisPath = schedulerPathRunner.TryToRunOnPath(src, v, dist[v]);
+                bool canUseThisPath = schedulerPathRunner.TryToRunOnPath(src, v, graph, terminalsTravelled);
                 if (!sptSet[v] && dist[v] < min && canUseThisPath)
                 {
                     min = dist[v];
                     minIndex = v;
                 }
             }
+            terminalsTravelled.Add(minIndex);
             return minIndex;
         }
         private List<int> GetTerminalsWhichAreTraveresed(int dest)
@@ -75,7 +78,7 @@
 
             for (int count = 0; count < V - 1; count++)
             {
-                int u = MinDistance(dist, sptSet,src);
+                int u = MinDistance(dist, sptSet,src,graph);
 
                 if (u == -1) continue;
 
