@@ -5,7 +5,7 @@ internal class Program
     private static async Task Main(string[] args)
     {
         int V = 11;
-        Dijkstra dijkstra = new Dijkstra(V);
+        PathFinder dijkstra = new PathFinder(V);
 
         //dijkstra.AddEdge(0, 1, 2);
         //dijkstra.AddEdge(0, 4, 1);

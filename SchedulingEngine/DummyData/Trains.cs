@@ -10,7 +10,6 @@ namespace SchedulingEngine.DummyData
         {
             Trains = GenerateRandomTrainsData();
         }
-
         private static List<Train> GenerateRandomTrainsData()
         {
             List<Train> data = new List<Train>();

@@ -1,14 +1,20 @@
 ﻿namespace SchedulingEngine.Scheduler
 {
-    public class Dijkstra
+    /// <summary>
+    /// Based on Dijkstra's algorithm
+    /// </summary>
+    public class PathFinder
     {
         private int V; // Number of vertices in the graph
         private List<List<(int, int)>> graph;
-
-        public Dijkstra(int v)
+        List<int> prev; // Store the previous vertices in the shortest path
+        SchedulerPathRunner schedulerPathRunner;
+        public PathFinder(int v)
         {
             V = v;
             graph = new List<List<(int, int)>>(V);
+            prev = new List<int>(V);
+            schedulerPathRunner = new SchedulerPathRunner();    
             for (int i = 0; i < V; i++)
             {
                 graph.Add(new List<(int, int)>());
@@ -30,7 +36,7 @@
             for (int v = 0; v < V; v++)
             {
                 //Here we will check if we can run on given path and able to find time slot for it.
-                bool canUseThisPath = TryToRunOnPath(src,v, dist[v]);
+                bool canUseThisPath = schedulerPathRunner.TryToRunOnPath(src, v, dist[v]);
                 if (!sptSet[v] && dist[v] < min && canUseThisPath)
                 {
                     min = dist[v];
@@ -39,19 +45,17 @@
             }
             return minIndex;
         }
-        /// <summary>
-        /// This method will be responsible to try to run on given path considering other trains on path and schedule of terminals
-        /// </summary>
-        /// <param name="terminalId"></param>
-        /// <param name="distancefromSources"></param>
-        /// <returns></returns>
-        private bool TryToRunOnPath(int sourceTerminalId,int terminalId , int distancefromSources)
+        private List<int> GetTerminalsWhichAreTraveresed(int dest)
         {
-            if(terminalId == 3)
+            List<int> path = new List<int>();
+            int current = dest;
+
+            while (current != -1)
             {
-                return false ;
+                path.Insert(0, current);
+                current = prev[current];
             }
-            return true;
+            return path;
         }
 
         public void ScheduledShortestPath(int src, int dest)
@@ -59,7 +63,6 @@
             List<int> dist = new List<int>(V);
             //Shortest path tree set
             List<bool> sptSet = new List<bool>(V);
-            List<int> prev = new List<int>(V); // Store the previous vertices in the shortest path
 
             for (int i = 0; i < V; i++)
             {
@@ -92,20 +95,13 @@
 
             // Reconstruct and print the shortest path from source to destination
             Console.WriteLine("Scheduled shortest path from " + src + " to " + dest + ":");
-            PrintShortestPath(prev, dest);
+            PrintShortestPath(dest);
         }
 
         // Print the shortest path from source to destination
-        private void PrintShortestPath(List<int> prev, int dest)
+        private void PrintShortestPath(int dest)
         {
-            List<int> path = new List<int>();
-            int current = dest;
-
-            while (current != -1)
-            {
-                path.Insert(0, current);
-                current = prev[current];
-            }
+            List<int> path = GetTerminalsWhichAreTraveresed(dest);
 
             foreach (var vertex in path)
             {
