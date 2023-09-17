@@ -23,20 +23,20 @@
         }
 
         // Find the vertex with the minimum distance value from the set of vertices not yet included in the shortest path tree
-        private int MinDistance(List<int> dist, List<bool> sptSet)
+        private int MinDistance(List<int> dist, List<bool> sptSet, int src)
         {
             int min = int.MaxValue;
             int minIndex = -1;
-
             for (int v = 0; v < V; v++)
             {
-                if (!sptSet[v] && dist[v] < min && TryToRunOnPath(v, dist[v]))
+                //Here we will check if we can run on given path and able to find time slot for it.
+                bool canUseThisPath = TryToRunOnPath(src,v, dist[v]);
+                if (!sptSet[v] && dist[v] < min && canUseThisPath)
                 {
                     min = dist[v];
                     minIndex = v;
                 }
             }
-
             return minIndex;
         }
         /// <summary>
@@ -45,9 +45,9 @@
         /// <param name="terminalId"></param>
         /// <param name="distancefromSources"></param>
         /// <returns></returns>
-        private bool TryToRunOnPath(int terminalId, int distancefromSources)
+        private bool TryToRunOnPath(int sourceTerminalId,int terminalId , int distancefromSources)
         {
-            if(terminalId == 4)
+            if(terminalId == 3)
             {
                 return false ;
             }
@@ -72,7 +72,7 @@
 
             for (int count = 0; count < V - 1; count++)
             {
-                int u = MinDistance(dist, sptSet);
+                int u = MinDistance(dist, sptSet,src);
 
                 if (u == -1) continue;
 
@@ -82,7 +82,6 @@
                 {
                     int v = edge.Item1;
                     int weight = edge.Item2;
-
                     if (!sptSet[v] && dist[u] != int.MaxValue && (dist[u] + weight < dist[v]))
                     {
                         dist[v] = dist[u] + weight;

@@ -29,6 +29,7 @@ internal class Program
         dijkstra.AddEdge(4, 3, 200);
         dijkstra.AddEdge(1, 3, 450);
         dijkstra.AddEdge(3, 5, 300);
+        dijkstra.AddEdge(4, 5, 200);
         dijkstra.ScheduledShortestPath(6, 5);
     }
 }
