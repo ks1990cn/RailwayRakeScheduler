@@ -3,7 +3,8 @@
     public class SchedulerPathRunner
     {
         /// <summary>
-        /// This method will be responsible to try to run on given path considering other trains on path and schedule of terminals
+        /// This method will be responsible to try to run on given path considering other trains on path and schedule of terminals.
+        /// If return false then algorithm will try to find any other path
         /// </summary>
         /// <param name="sourceTerminalId"></param>
         /// <param name="terminalId"></param>
