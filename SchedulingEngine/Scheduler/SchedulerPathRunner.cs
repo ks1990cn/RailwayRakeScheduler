@@ -19,25 +19,21 @@
             if (terminalsTravelled.Count > 0)
             {
                 int lastTerminalTravelled = terminalsTravelled.Last();
+
                 List<(DateTime, DateTime)> availableTerminalSchedules = GetAvailableTimesForTerminalSchedules(terminalId);
 
-                var lastTerminal = graph[lastTerminalTravelled].Where(a => a.Item1 == terminalId).ToList();
+                var currentTerminalData = graph[lastTerminalTravelled].Where(a => a.Item1 == terminalId).ToList();
 
-                if (lastTerminal.Count > 0)
+                if (currentTerminalData.Count > 0)
                 {
-                    var distanceFromLastToCurrentTerminal = lastTerminal.First().Item2;
+                    var distanceFromLastToCurrentTerminal = currentTerminalData.First().Item2;
 
-                    //Store it in Database or List from Here, so we can retrieve everytime when required without calculating further
-                    IsScheduleAvailableFromLastTerminalToCurrentTerminal(lastTerminalTravelled, terminalId, distanceFromLastToCurrentTerminal);
+
                 }
+
 
             }
             return true;
-        }
-
-        private List<(DateTime,DateTime)> IsScheduleAvailableFromLastTerminalToCurrentTerminal(int lastTerminalTravelled, int terminalId, int distanceFromLastToCurrentTerminal)
-        {
-            return new List<(DateTime, DateTime)>();
         }
 
         /// <summary>
