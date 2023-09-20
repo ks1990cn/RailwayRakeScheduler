@@ -8,7 +8,6 @@ internal class Program
     {
         int V = 11;
         PathFinder dijkstra = new PathFinder(V);
-        var abc =TerminalsData.Terminals;
         //dijkstra.AddEdge(0, 1, 2);
         //dijkstra.AddEdge(0, 4, 1);
         //dijkstra.AddEdge(1, 2, 4);
