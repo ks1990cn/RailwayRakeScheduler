@@ -43,12 +43,7 @@ namespace SchedulingEngine.Scheduler
 
                     foreach (var existingTimeSlot in availableTerminalSchedules)
                     {
-                        //If out of bound time, then can not follow this path
-                        if(existingTimeSlot.Item1 >= expectedArrivalTimeOnCurrentTerminal || existingTimeSlot.Item2 <=  expectedArrivalTimeOnCurrentTerminal)
-                        {
-                            return false;
-                        }
-                        //If its in range, we need to find scheduled time
+                        
                     }
                 }
             }
