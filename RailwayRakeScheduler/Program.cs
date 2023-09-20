@@ -31,6 +31,8 @@ internal class Program
         dijkstra.AddEdge(1, 3, 450);
         dijkstra.AddEdge(3, 5, 300);
         dijkstra.AddEdge(4, 5, 200);
-        dijkstra.ScheduledShortestPath(6, 5);
+        
+        var schedulingTrain = TrainDetails.Trains.First(a => a.TrainNumber == 6);
+        dijkstra.ScheduledShortestPath(6, 5,schedulingTrain);
     }
 }

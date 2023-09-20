@@ -1,7 +1,11 @@
-﻿namespace SchedulingEngine.Scheduler
+﻿using SchedulingEngine.DummyData;
+
+namespace SchedulingEngine.Scheduler
 {
     public class SchedulerPathRunner
     {
+        private const int averageRunningTimeOfTrain = 60;
+        DateTime ScheduledDepartureTimeFromSource;
         public SchedulerPathRunner()
         {
                 
@@ -14,7 +18,7 @@
         /// <param name="terminalId"></param>
         /// <param name="distancefromSources"></param>
         /// <returns></returns>
-        public bool TryToRunOnPath(int sourceTerminalId, int terminalId, List<List<(int, int)>> graph, List<int> terminalsTravelled)
+        public bool TryToRunOnPath(int sourceTerminalId, int terminalId, List<List<(int, int)>> graph, List<int> terminalsTravelled, Model.Train schedulingTrain)
         {
             if (terminalsTravelled.Count > 0)
             {
@@ -28,10 +32,25 @@
                 {
                     var distanceFromLastToCurrentTerminal = currentTerminalData.First().Item2;
 
+                    double timeTaken = distanceFromLastToCurrentTerminal / averageRunningTimeOfTrain;
 
+                    if(lastTerminalTravelled == sourceTerminalId)
+                    {
+                       ScheduledDepartureTimeFromSource = TerminalTrainScheduleData.TrainSchedulePerTerminal.First(a => a.Key == schedulingTrain.TrainNumber).Value.
+                                                                First(a=>a.Item1 == schedulingTrain.TrainNumber).Item3;
+                    }
+                    var expectedArrivalTimeOnCurrentTerminal = ScheduledDepartureTimeFromSource.AddHours(timeTaken);
+
+                    foreach (var existingTimeSlot in availableTerminalSchedules)
+                    {
+                        //If out of bound time, then can not follow this path
+                        if(existingTimeSlot.Item1 >= expectedArrivalTimeOnCurrentTerminal || existingTimeSlot.Item2 <=  expectedArrivalTimeOnCurrentTerminal)
+                        {
+                            return false;
+                        }
+                        //If its in range, we need to find scheduled time
+                    }
                 }
-
-
             }
             return true;
         }

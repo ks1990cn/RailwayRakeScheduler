@@ -31,14 +31,14 @@
         }
 
         // Find the vertex with the minimum distance value from the set of vertices not yet included in the shortest path tree
-        private int MinDistance(List<int> dist, List<bool> sptSet, int src, List<List<(int, int)>> graph)
+        private int MinDistance(List<int> dist, List<bool> sptSet, int src, List<List<(int, int)>> graph, Model.Train schedulingTrain)
         {
             int min = int.MaxValue;
             int minIndex = -1;
             for (int v = 0; v < V; v++)
             {
                 //Here we will check if we can run on given path and able to find time slot for it.
-                bool canUseThisPath = schedulerPathRunner.TryToRunOnPath(src, v, graph, terminalsTravelled);
+                bool canUseThisPath = schedulerPathRunner.TryToRunOnPath(src, v, graph, terminalsTravelled,schedulingTrain);
                 if (!sptSet[v] && dist[v] < min && canUseThisPath)
                 {
                     min = dist[v];
@@ -61,7 +61,7 @@
             return path;
         }
 
-        public void ScheduledShortestPath(int src, int dest)
+        public void ScheduledShortestPath(int src, int dest, Model.Train schedulingTrain)
         {
             List<int> dist = new List<int>(V);
             //Shortest path tree set
@@ -78,7 +78,7 @@
 
             for (int count = 0; count < V - 1; count++)
             {
-                int u = MinDistance(dist, sptSet,src,graph);
+                int u = MinDistance(dist, sptSet,src,graph, schedulingTrain);
 
                 if (u == -1) continue;
 
