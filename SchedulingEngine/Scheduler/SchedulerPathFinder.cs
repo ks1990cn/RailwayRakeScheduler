@@ -8,15 +8,15 @@
         private int V; // Number of vertices in the graph
         private List<List<(int, int)>> graph;
         List<int> prev; // Store the previous vertices in the shortest path
-        SchedulerPathRunner schedulerPathRunner;
-        List<int> terminalsTravelled;    
+        List<int> terminalsTravelled; 
+        public List<int> ResultPath;
         public PathFinder(int v)
         {
             V = v;
             graph = new List<List<(int, int)>>(V);
             prev = new List<int>(V);
             terminalsTravelled = new List<int>();
-            schedulerPathRunner = new SchedulerPathRunner();    
+            ResultPath = new();
             for (int i = 0; i < V; i++)
             {
                 graph.Add(new List<(int, int)>());
@@ -31,14 +31,14 @@
         }
 
         // Find the vertex with the minimum distance value from the set of vertices not yet included in the shortest path tree
-        private int MinDistance(List<int> dist, List<bool> sptSet, int src, List<List<(int, int)>> graph, Model.Train schedulingTrain)
+        private int MinDistance(List<int> dist, List<bool> sptSet)
         {
             int min = int.MaxValue;
             int minIndex = -1;
             for (int v = 0; v < V; v++)
             {
                 //Here we will check if we can run on given path and able to find time slot for it.
-                bool canUseThisPath = schedulerPathRunner.TryToRunOnPath(src, v, graph, terminalsTravelled,schedulingTrain);
+                bool canUseThisPath = canRunOnThisPath();
                 if (!sptSet[v] && dist[v] < min && canUseThisPath)
                 {
                     min = dist[v];
@@ -48,6 +48,12 @@
             terminalsTravelled.Add(minIndex);
             return minIndex;
         }
+
+        private bool canRunOnThisPath()
+        {
+            return true;
+        }
+
         private List<int> GetTerminalsWhichAreTraveresed(int dest)
         {
             List<int> path = new List<int>();
@@ -61,7 +67,7 @@
             return path;
         }
 
-        public void ScheduledShortestPath(int src, int dest, Model.Train schedulingTrain)
+        public void ScheduledShortestPath(int src, int dest)
         {
             List<int> dist = new List<int>(V);
             //Shortest path tree set
@@ -78,7 +84,7 @@
 
             for (int count = 0; count < V - 1; count++)
             {
-                int u = MinDistance(dist, sptSet,src,graph, schedulingTrain);
+                int u = MinDistance(dist, sptSet);
 
                 if (u == -1) continue;
 
@@ -98,22 +104,8 @@
 
             // Reconstruct and print the shortest path from source to destination
             Console.WriteLine("Scheduled shortest path from " + src + " to " + dest + ":");
-            PrintShortestPath(dest);
+            ResultPath = GetTerminalsWhichAreTraveresed(dest);
         }
-
-        // Print the shortest path from source to destination
-        private void PrintShortestPath(int dest)
-        {
-            List<int> path = GetTerminalsWhichAreTraveresed(dest);
-
-            foreach (var vertex in path)
-            {
-                Console.Write(vertex + " ");
-            }
-
-            Console.WriteLine();
-        }
-
     }
 
 }

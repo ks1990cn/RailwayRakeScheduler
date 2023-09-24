@@ -1,5 +1,4 @@
 ﻿using SchedulingEngine.DummyData;
-using SchedulingEngine.Model;
 using SchedulingEngine.Scheduler;
 
 internal class Program
@@ -8,15 +7,7 @@ internal class Program
     {
         int V = 11;
         PathFinder dijkstra = new PathFinder(V);
-        //dijkstra.AddEdge(0, 1, 2);
-        //dijkstra.AddEdge(0, 4, 1);
-        //dijkstra.AddEdge(1, 2, 4);
-        //dijkstra.AddEdge(1, 4, 3);
-        //dijkstra.AddEdge(2, 3, 5);
-        //dijkstra.AddEdge(2, 4, 5);
-        //dijkstra.AddEdge(3, 4, 7);
-        //dijkstra.AddEdge(3, 5, 2);
-        //dijkstra.AddEdge(4, 5, 4);
+        SchedulerPathRunner schedulerPathRunner = new SchedulerPathRunner();
         dijkstra.AddEdge(6, 1, 600);
         dijkstra.AddEdge(1, 2, 700);
         dijkstra.AddEdge(2, 9, 200);
@@ -33,6 +24,30 @@ internal class Program
         dijkstra.AddEdge(4, 5, 200);
         
         var schedulingTrain = TrainDetails.Trains.First(a => a.TrainNumber == 6);
-        dijkstra.ScheduledShortestPath(6, 5,schedulingTrain);
+
+        List<int> terminalsOnWhichSchedulingImpossible = new List<int>();
+
+        Dictionary<int,DateTime> SchedulePerTerminal = new Dictionary<int,DateTime>();
+
+        do
+        {
+            // TODO: Here we can fetch any existing shortest path from Database
+
+            dijkstra.ScheduledShortestPath(6, 5);
+
+            var shortestPathFound = dijkstra.ResultPath;
+
+            schedulerPathRunner.TryToRunOnPath(shortestPathFound,terminalsOnWhichSchedulingImpossible, ref SchedulePerTerminal);
+
+            if(terminalsOnWhichSchedulingImpossible.Count() == 0)
+            {
+                foreach (var schedules in SchedulePerTerminal)
+                {
+                    Console.WriteLine(schedules.Key + " " + schedules.Value);
+                }
+            }
+
+        } while (terminalsOnWhichSchedulingImpossible.Any());
+        
     }
 }

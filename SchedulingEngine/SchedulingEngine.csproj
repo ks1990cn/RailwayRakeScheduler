@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.OrTools" Version="9.7.2996" />
+  </ItemGroup>
+
 </Project>
