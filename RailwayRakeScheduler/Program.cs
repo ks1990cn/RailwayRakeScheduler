@@ -29,6 +29,8 @@ internal class Program
 
         Dictionary<int,DateTime> SchedulePerTerminal = new Dictionary<int,DateTime>();
 
+        var trainSchedulePerTerminal = TerminalTrainScheduleData.TrainSchedulePerTerminal;
+
         do
         {
             // TODO: Here we can fetch any existing shortest path from Database
