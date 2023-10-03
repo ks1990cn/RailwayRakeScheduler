@@ -29,7 +29,7 @@ internal class Program
 
             var shortestPathFound = dijkstra.ResultPath;
 
-            schedulerPathRunner.TryToRunOnPath(shortestPathFound, terminalsOnWhichSchedulingImpossible, ref SchedulePerTerminal);
+            schedulerPathRunner.TryToRunOnPath(shortestPathFound, terminalsOnWhichSchedulingImpossible, existingTrainSchedulePerTerminal, ref SchedulePerTerminal);
 
             if (terminalsOnWhichSchedulingImpossible.Count() == 0)
             {

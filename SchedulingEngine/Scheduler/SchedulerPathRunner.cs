@@ -1,5 +1,4 @@
 ﻿using Google.OrTools.LinearSolver;
-using static Google.OrTools.LinearSolver.Solver;
 
 namespace SchedulingEngine.Scheduler
 {
@@ -14,46 +13,66 @@ namespace SchedulingEngine.Scheduler
         /// If return false then algorithm will try to find any other path
         /// </summary>
         /// <returns></returns>
-        public void TryToRunOnPath(List<int> shortestPath, List<int> terminalsOnWhichSchedulingImpossible, ref Dictionary<int, DateTime> schedulePerTerminal)
+        public void TryToRunOnPath(List<int> shortestPath, List<int> terminalsOnWhichSchedulingImpossible, Dictionary<int, List<(int, DateTime, DateTime, bool)>> existingTrainSchedulePerTerminal, ref Dictionary<int, DateTime> schedulePerTerminal)
         {
-           
+            DateTime specifiedDepartureTime = new DateTime(2023, 1, 1, 10, 0, 0);
+            for (int i = 0; i < shortestPath.Count - 1; i++)
+            {
+                List<(DateTime, DateTime)> availableTimeSlot = new List<(DateTime, DateTime)>();
+
+                var trainScheduleForNextStation = existingTrainSchedulePerTerminal.
+                    Select(a => a.Value.First(b => b.Item1 == shortestPath[i + 1])).ToList();
+
+                SolveForOptimalDepartureTimeFromSource(specifiedDepartureTime, trainScheduleForNextStation);
+            }
         }
 
-        public static DateTime? SolveForOptimalDepartureTimeFromSource(DateTime arrivalTimeDestination, DateTime[] timeRanges, DateTime specifiedDepartureTime)
+        private void SolveForOptimalDepartureTimeFromSource(DateTime specifiedDepartureTime, List<(int, DateTime, DateTime, bool)> trainScheduleForNextStation)
         {
-            // Create a new LP model.
-            Solver solver = Solver.CreateSolver("DepartureTimeSolver");
+            // Create the solver.
+            Solver solver = Solver.CreateSolver("SCIP");
 
-            // Define the decision variables.
-            Variable departureTimeFromSourceVariable = solver.MakeNumVar(0, Double.PositiveInfinity, "departureTimeFromSource");
-            Variable arrivalTimeDestinationVariable = solver.MakeNumVar(arrivalTimeDestination.Ticks, arrivalTimeDestination.Ticks, "arrivalTimeDestination");
+            // Create variables.
+            var departureTimeFromSource = solver.MakeIntVar(specifiedDepartureTime.Ticks, DateTime.MaxValue.Ticks, "departureTimeFromSource");
 
-            // Define the constraints.
-            solver.Add(arrivalTimeDestinationVariable - departureTimeFromSourceVariable == 10);
+            // Define the arrival time at the destination (change this to your specific constraints).
+            var arrivalTimeDestination = solver.MakeIntVar(specifiedDepartureTime.AddHours(10).Ticks, DateTime.MaxValue.Ticks, "arrivalTimeDestination");
 
-            foreach (DateTime timeRange in timeRanges)
+            // Add constraints.
+            solver.Add(arrivalTimeDestination >= departureTimeFromSource + 10);
+            solver.Add(departureTimeFromSource >= specifiedDepartureTime.Ticks);
+            Solver.ResultStatus resultStatus;
+            bool overlapFound = false;
+            // Solve the problem.
+            do
             {
-                Variable timeRangeVariable = solver.MakeNumVar(timeRange.Ticks, timeRange.Ticks, "timeRange");
-                
-                //solver.Add(timeRangeVariable - arrivalTimeDestinationVariable < 0);
-                //solver.Add(arrivalTimeDestination < timeRange.AddTicks(1));
-            }
+                resultStatus = solver.Solve();
+                overlapFound = false;
+                if (resultStatus == Solver.ResultStatus.OPTIMAL)
+                {
+                    // Get the optimal departureTimeFromSource value.
+                    var optimalDepartureTime = new DateTime((long)departureTimeFromSource.SolutionValue());
 
-            //solver.Add(departureTimeFromSourceVariable > specifiedDepartureTime.Ticks);
+                    var optimalArrivalTime = new DateTime((long)arrivalTimeDestination.SolutionValue());
 
-            // Define the objective function.
-            solver.Minimize(departureTimeFromSourceVariable - specifiedDepartureTime.Ticks);
+                    foreach (var item in trainScheduleForNextStation)
+                    {
+                        //overlap of schedule, lets find solution again and skip this range
+                        if (item.Item2 <= optimalArrivalTime && item.Item3 >= optimalArrivalTime)
+                        {
+                            overlapFound = true;
+                        }
+                    }
 
-            // Solve the LP model.
-            Solver.ResultStatus solution = solver.Solve();
-
-            if (solution == Solver.ResultStatus.OPTIMAL)
-            {
-                
-            }
-            return null;
-            // Get the optimal value for departureTimeFromSource.
-            //return new DateTime(solver.Objective().Value());
+                    Console.WriteLine($"Optimal departureTimeFromSource: {optimalDepartureTime}");
+                }
+                else
+                {
+                    Console.WriteLine("No optimal solution found.");
+                    break;
+                }
+            } while (overlapFound);
+          
         }
     }
 }
