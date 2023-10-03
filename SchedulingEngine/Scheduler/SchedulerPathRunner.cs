@@ -60,10 +60,14 @@ namespace SchedulingEngine.Scheduler
                         //overlap of schedule, lets find solution again and skip this range
                         if (item.Item2 <= optimalArrivalTime && item.Item3 >= optimalArrivalTime)
                         {
+                            // Create a boolean variable to represent the condition.
+                            var conditionVariable = solver.MakeIntVar(item.Item2.Ticks, item.Item3.Ticks,"conditionVariable");
+                            //departureTimeFromSource should not be in above condition.
+                            solver.Add(departureTimeFromSource != conditionVariable);
                             overlapFound = true;
                         }
                     }
-
+                    specifiedDepartureTime = optimalDepartureTime;
                     Console.WriteLine($"Optimal departureTimeFromSource: {optimalDepartureTime}");
                 }
                 else
